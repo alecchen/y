@@ -76,10 +76,12 @@ else {
 
 __DATA__
 NAME
-    y - y is z for csh
+    y - y is z for csh/bash
+
 
 SYNOPSIS
        y [-h] [-l] [-r] [-t] [regex1 regex2 ... regexn]
+
 
 OPTIONS
        -h show a brief help message
@@ -87,11 +89,22 @@ OPTIONS
        -r match by rank only
        -t match by recent access only
 
+
 INSTALL
+    1. for csh users
+
     add the following lines into your ~/.cshrc
 
         alias precmd '$PATH_TO_Y_WRITE'
-        alias y      'source $PATH_TO_Y_SCRIPT'
+        alias y      'source $PATH_TO_Y_DOT_CSH_SCRIPT'
+
+    2. for bash users
+
+    add the following lines into your ~/.bashrc
+
+        trap '$PATH_TO_Y_WRITE' DEBUG
+        alias y='source $PATH_TO_Y_DO_SH_SCRIPT'
+
 
 EXAMPLES
        y foo	     cd to most frecent dir matching foo
@@ -99,6 +112,7 @@ EXAMPLES
        y -r foo	     cd to highest ranked dir matching foo
        y -t foo	     cd to most recently accessed dir matching foo
        y -l foo	     list all dirs matching foo (by frecency)
+
 
 SEE ALSO
     https://github.com/rupa/z
