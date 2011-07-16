@@ -60,7 +60,7 @@ else {
         my $path = $sorted_data->[0];
         if (all {$path =~ /$_/i} @patterns) {
             if ($option ne '-l') {
-                say $path;
+                print "$path\n";
                 last;
             }
             else {
