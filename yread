@@ -1,11 +1,12 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #===============================================================================
 #         FILE:  yread
 #       AUTHOR:  ALEC CHEN (AC), alec@cpan.org
 #===============================================================================
 
-use Modern::Perl;
-use IO::All;
+use strict;
+use warnings;
+
 use File::Spec;
 use List::MoreUtils qw(all);
 #use Smart::Comments;
@@ -25,10 +26,14 @@ if ($option eq '-h') {
 my $data = File::Spec->catfile($ENV{HOME}, '.y');
 ### $data
 
+open INPUT, "<$data"
+    or die "can't open $data for reading: $!\n";
 
 my %data = map { $_->[0] => [$_->[1], $_->[2] ] } 
-    map { [split /\|/, $_] } io($data)->chomp->slurp;
+    map { [split /\|/, $_] } <INPUT>;
 ### %data
+
+close INPUT;
 
 my $time = time;
 my @sorted_data = map { [$_->[0], $_->[1]] } 

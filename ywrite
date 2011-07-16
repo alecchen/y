@@ -1,24 +1,22 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 #===============================================================================
 #         FILE:  ywrite
 #       AUTHOR:  ALEC CHEN (AC), alec@cpan.org
 #===============================================================================
 
-#use Modern::Perl;
 use strict;
 use warnings;
 
 use Cwd; 
 use File::Spec;
 use List::Util qw(sum);
-#use IO::All; # remove this
 #use Smart::Comments;
 
 my $data = File::Spec->catfile($ENV{HOME}, '.y');
 ### $data
 
 if (! -e $data) {
-    open OUTUT, ">$data"
+    open OUTPUT, ">$data"
         or die "can't open $data for writing: $!\n";
     print OUTPUT q{};
     close OUTPUT;
@@ -34,10 +32,9 @@ my $time = time;
 
 open INPUT, "<$data"
     or die "can't open $data for reading: $!\n";
-### $data
 
 my %data = map { $_->[0] => [$_->[1], $_->[2] ] } 
-    map { [split /\|/, $_] } <INPUT>;
+    map { chomp; [split /\|/, $_] } <INPUT>;
 ### %data
 
 close INPUT;

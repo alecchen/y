@@ -2,7 +2,7 @@
 
 set y_path     = `alias y | cut -d" " -f2`
 set y_dir      = `dirname $y_path`
-set yread_path = "$y_dir/yread.pl"
+set yread_path = "$y_dir/yread"
 
 if ("$1" == "" || "$1" == "-h" || "$1" == "-l") then
     $yread_path $*
