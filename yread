@@ -8,6 +8,7 @@ use strict;
 use warnings;
 
 use File::Spec;
+use FindBin qw($RealBin);
 use List::MoreUtils qw(all);
 #use Smart::Comments;
 
@@ -19,7 +20,11 @@ my $option = @ARGV > 0 && $ARGV[0] =~ /^-/ ? shift @patterns : q{};
 ### @patterns
 
 if ($option eq '-h') {
-    print <DATA>;
+    my $readme = File::Spec->catfile($RealBin, 'README');
+    open README, "<$readme"
+        or die "can't open $readme for reading: $!\n";
+    print <README>;
+    close README;
     exit;
 }
 
@@ -73,46 +78,3 @@ else {
         map { printf "%-10d %s\n", $_->[1], $_->[0] } reverse @output;
     }
 }
-
-__DATA__
-NAME
-    y - y is z for csh/bash
-
-
-SYNOPSIS
-       y [-h] [-l] [-r] [-t] [regex1 regex2 ... regexn]
-
-
-OPTIONS
-       -h show a brief help message
-       -l list only
-       -r match by rank only
-       -t match by recent access only
-
-
-INSTALL
-    1. for csh users
-
-    add the following lines into your ~/.cshrc
-
-        alias precmd '$PATH_TO_Y_WRITE'
-        alias y      'source $PATH_TO_Y_DOT_CSH_SCRIPT'
-
-    2. for bash users
-
-    add the following lines into your ~/.bashrc
-
-        trap '$PATH_TO_Y_WRITE' DEBUG
-        alias y='source $PATH_TO_Y_DO_SH_SCRIPT'
-
-
-EXAMPLES
-       y foo	     cd to most frecent dir matching foo
-       y foo bar     cd to most frecent dir matching foo and bar
-       y -r foo	     cd to highest ranked dir matching foo
-       y -t foo	     cd to most recently accessed dir matching foo
-       y -l foo	     list all dirs matching foo (by frecency)
-
-
-SEE ALSO
-    https://github.com/rupa/z

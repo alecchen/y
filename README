@@ -26,7 +26,7 @@ INSTALL
     add the following lines into your ~/.bashrc
 
         trap '$PATH_TO_Y_WRITE' DEBUG
-        alias y='source $PATH_TO_Y_DO_SH_SCRIPT'
+        alias y='source $PATH_TO_Y_DOT_SH_SCRIPT'
 
 
 EXAMPLES
