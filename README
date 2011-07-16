@@ -1,0 +1,27 @@
+NAME
+    y - y is z for csh
+
+SYNOPSIS
+       y [-h] [-l] [-r] [-t] [regex1 regex2 ... regexn]
+
+OPTIONS
+       -h show a brief help message
+       -l list only
+       -r match by rank only
+       -t match by recent access only
+
+INSTALL
+    add the following lines into your ~/.cshrc
+
+        alias precmd '$PATH_TO_Y_WRITE'
+        alias y      'source $PATH_TO_Y_SCRIPT'
+
+EXAMPLES
+       y foo	     cd to most frecent dir matching foo
+       y foo bar     cd to most frecent dir matching foo and bar
+       y -r foo	     cd to highest ranked dir matching foo
+       y -t foo	     cd to most recently accessed dir matching foo
+       y -l foo	     list all dirs matching foo (by frecency)
+
+SEE ALSO
+    https://github.com/rupa/z

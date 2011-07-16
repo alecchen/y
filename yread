@@ -1,0 +1,99 @@
+#!/bin/env perl
+#===============================================================================
+#         FILE:  yread
+#       AUTHOR:  ALEC CHEN (AC), alec@cpan.org
+#===============================================================================
+
+use Modern::Perl;
+use IO::All;
+use File::Spec;
+use List::MoreUtils qw(all);
+#use Smart::Comments;
+
+my @patterns = @ARGV;
+### @patterns
+
+my $option = @ARGV > 0 && $ARGV[0] =~ /^-/ ? shift @patterns : q{};
+### $option
+### @patterns
+
+if ($option eq '-h') {
+    print <DATA>;
+    exit;
+}
+
+my $data = File::Spec->catfile($ENV{HOME}, '.y');
+### $data
+
+
+my %data = map { $_->[0] => [$_->[1], $_->[2] ] } 
+    map { [split /\|/, $_] } io($data)->chomp->slurp;
+### %data
+
+my $time = time;
+my @sorted_data = map { [$_->[0], $_->[1]] } 
+    sort { $b->[1] <=> $a->[1] } 
+    map { 
+        my $dx = $_->[2];
+        my $ratio = $dx < 3600 ? 4: 
+            $dx < 86400 ? 2 :
+            $dx < 604800 ? 0.5 :
+            0.25;
+        my $sort_by = 
+            $option eq '-r' ? $_->[1] :
+            $option eq '-t' ? 1/$dx     : $_->[1]*$ratio;
+        [$_->[0], $sort_by];
+    } map { [$_, $data{$_}->[0], $time - $data{$_}->[1]] } keys %data;
+### @sorted_data
+
+if (@ARGV == 0) {
+    map { printf "%-10d %s\n", $_->[1], $_->[0] } reverse @sorted_data;
+}
+else {
+    my @output = ();
+    foreach my $sorted_data (@sorted_data) {
+        my $path = $sorted_data->[0];
+        if (all {$path =~ /$_/i} @patterns) {
+            if ($option ne '-l') {
+                say $path;
+                last;
+            }
+            else {
+                push @output, $sorted_data;
+            }
+        }
+    }
+
+    if (@output > 0) {
+        map { printf "%-10d %s\n", $_->[1], $_->[0] } reverse @output;
+    }
+}
+
+__DATA__
+NAME
+    y - y is z for csh
+
+SYNOPSIS
+       y [-h] [-l] [-r] [-t] [regex1 regex2 ... regexn]
+
+OPTIONS
+       -h show a brief help message
+       -l list only
+       -r match by rank only
+       -t match by recent access only
+
+INSTALL
+    add the following lines into your ~/.cshrc
+
+        alias precmd '$PATH_TO_Y_WRITE'
+        alias y      'source $PATH_TO_Y_SCRIPT'
+
+EXAMPLES
+       y foo	     cd to most frecent dir matching foo
+       y foo bar     cd to most frecent dir matching foo and bar
+       y -r foo	     cd to highest ranked dir matching foo
+       y -t foo	     cd to most recently accessed dir matching foo
+       y -l foo	     list all dirs matching foo (by frecency)
+
+SEE ALSO
+    https://github.com/rupa/z

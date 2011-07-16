@@ -1,0 +1,64 @@
+#!/bin/env perl
+#===============================================================================
+#         FILE:  ywrite
+#       AUTHOR:  ALEC CHEN (AC), alec@cpan.org
+#===============================================================================
+
+#use Modern::Perl;
+use strict;
+use warnings;
+
+use Cwd; 
+use File::Spec;
+use List::Util qw(sum);
+#use IO::All; # remove this
+#use Smart::Comments;
+
+my $data = File::Spec->catfile($ENV{HOME}, '.y');
+### $data
+
+if (! -e $data) {
+    open OUTUT, ">$data"
+        or die "can't open $data for writing: $!\n";
+    print OUTPUT q{};
+    close OUTPUT;
+}
+
+my $cwd = cwd();
+### $cwd
+
+exit if $cwd eq $ENV{HOME};
+
+my $time = time;
+### $time
+
+open INPUT, "<$data"
+    or die "can't open $data for reading: $!\n";
+### $data
+
+my %data = map { $_->[0] => [$_->[1], $_->[2] ] } 
+    map { [split /\|/, $_] } <INPUT>;
+### %data
+
+close INPUT;
+
+$data{$cwd}->[0] += 1;
+$data{$cwd}->[1] = $time;
+### %data
+
+my $total_count = sum map { $data{$_}->[0] } keys %data;
+### $total_count
+
+my $aging_ratio = $total_count > 1000 ? 0.9 : 1;
+### $aging_ratio
+
+my $new_data = join q{}, 
+   map  { sprintf "%s|%s|%s\n", $_->[0], $_->[1], $_->[2] }
+#grep { $_->[1] > 1 }
+   map  { [$_, $data{$_}->[0]*$aging_ratio, $data{$_}->[1]] } keys %data;
+### $new_data
+
+open OUTPUT, ">$data"
+    or die "can't open $data for writing: $!\n";
+print OUTPUT $new_data;
+close OUTPUT;
